@@ -7,7 +7,7 @@ import { FolderGit2, ExternalLink, X, CheckCircle2 } from "lucide-react";
 import { Github } from "../ui/BrandIcons";
 import { SiApple, SiGoogleplay } from "react-icons/si";
 import Image from "next/image";
-import { getProjects } from "@/lib/supabase";
+import { getProjects, type Project as DBProject } from "@/lib/supabase";
 
 interface Project {
   id: number;
@@ -24,6 +24,27 @@ interface Project {
     problem: string;
     solution: string;
     features: string[];
+  };
+}
+
+/** Map a Supabase DB row (snake_case) → component shape (camelCase) */
+function mapDBProject(p: DBProject): Project {
+  return {
+    id:            p.id,
+    title:         p.title,
+    category:      p.category as Project["category"],
+    image:         p.image,
+    tech:          p.tech,
+    overview:      p.overview,
+    demoUrl:       p.demo_url,
+    githubUrl:     p.github_url,
+    appStoreUrl:   p.app_store_url,
+    playStoreUrl:  p.play_store_url,
+    caseStudy: {
+      problem:  p.problem,
+      solution: p.solution,
+      features: p.features,
+    },
   };
 }
 
@@ -385,7 +406,7 @@ export default function Projects() {
     async function loadProjects() {
       const data = await getProjects();
       if (data && data.length > 0) {
-        setProjects(data);
+        setProjects(data.map(mapDBProject));
       }
     }
     loadProjects();
