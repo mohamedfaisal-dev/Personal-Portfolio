@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { sb, type Proj } from "./_shared";
+import { sb, type Proj } from "../shared";
 
 const EMPTY: Omit<Proj,"id"> = {
   sort_order:0, title:"", category:"Web Application", image:"",

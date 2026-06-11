@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { sb, type Skill } from "./_shared";
+import { sb, type Skill } from "../shared";
 
 const CATS = ["Frontend","Backend","Mobile","Database","DevOps"];
 

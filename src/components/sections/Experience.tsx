@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Briefcase, Calendar, CheckCircle2 } from "lucide-react";
+import { getExperiences, type Experience as DBExperience } from "@/lib/supabase";
 
 interface TimelineItem {
   id: number;
@@ -10,6 +12,17 @@ interface TimelineItem {
   period: string;
   description: string;
   points: string[];
+}
+
+function mapDBExperience(e: DBExperience): TimelineItem {
+  return {
+    id:          e.id,
+    role:        e.role,
+    company:     e.company + (e.location ? ` | ${e.location}` : ""),
+    period:      `${e.start_date} - ${e.end_date || "Present"}`,
+    description: e.description,
+    points:      e.tech || [],
+  };
 }
 
 const experienceData: TimelineItem[] = [
@@ -44,6 +57,18 @@ const experienceData: TimelineItem[] = [
 ];
 
 export default function Experience() {
+  const [experiences, setExperiences] = useState<TimelineItem[]>(experienceData);
+
+  useEffect(() => {
+    async function loadExperiences() {
+      const data = await getExperiences();
+      if (data && data.length > 0) {
+        setExperiences(data.map(mapDBExperience));
+      }
+    }
+    loadExperiences();
+  }, []);
+
   return (
     <section
       id="experience"
@@ -78,7 +103,7 @@ export default function Experience() {
 
         {/* Timeline Path */}
         <div className="relative border-l border-border-glass pl-6 md:pl-10 ml-2 md:ml-6 flex flex-col gap-12">
-          {experienceData.map((item, idx) => (
+          {experiences.map((item, idx) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, x: -30 }}

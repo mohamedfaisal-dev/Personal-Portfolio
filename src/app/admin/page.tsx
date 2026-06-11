@@ -4,11 +4,12 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Mail, LogOut, FolderGit2, Star, Zap, RefreshCw,
   ExternalLink, Shield, Eye, EyeOff, Trash2, Pencil,
-  Plus, CheckCircle, Circle, BarChart2
+  Plus, CheckCircle, Circle, BarChart2, Briefcase
 } from "lucide-react";
-import { sb, fetchAll, type Msg, type Proj, type Skill, type Ach, type Tab } from "./_shared";
-import ProjectForm from "./_ProjectForm";
-import SkillForm   from "./_SkillForm";
+import { sb, fetchAll, type Msg, type Proj, type Skill, type Ach, type Exp, type Tab } from "./shared";
+import ProjectForm from "./components/ProjectForm";
+import SkillForm   from "./components/SkillForm";
+import ExperienceForm from "./components/ExperienceForm";
 
 /* ── Login Screen ──────────────────────────────────────────────── */
 function LoginScreen() {
@@ -70,13 +71,16 @@ export default function AdminPage() {
   const [projects, setProjects] = useState<Proj[]>([]);
   const [skills,   setSkills]   = useState<Skill[]>([]);
   const [ach,      setAch]      = useState<Ach[]>([]);
+  const [experiences, setExperiences] = useState<Exp[]>([]);
   const [spinning, setSpinning] = useState(false);
 
-  /* project/skill modal state */
+  /* project/skill/experience modal state */
   const [showProjForm,  setShowProjForm]  = useState(false);
   const [editProj,      setEditProj]      = useState<Proj|undefined>();
   const [showSkillForm, setShowSkillForm] = useState(false);
   const [editSkill,     setEditSkill]     = useState<Skill|undefined>();
+  const [showExpForm,   setShowExpForm]   = useState(false);
+  const [editExp,       setEditExp]       = useState<Exp|undefined>();
 
   /* ── auth ── */
   useEffect(() => {
@@ -91,6 +95,7 @@ export default function AdminPage() {
     const d = await fetchAll();
     setMessages(d.messages); setProjects(d.projects);
     setSkills(d.skills);     setAch(d.achievements);
+    setExperiences(d.experiences);
     setSpinning(false);
   }, []);
 
@@ -118,6 +123,9 @@ export default function AdminPage() {
 
   /* ── skill actions ── */
   const deleteSkill = async (id:number, n:string) => { if(!confirm(`Delete "${n}"?`))return; await sb.from("skills").delete().eq("id",id); setSkills(ss=>ss.filter(s=>s.id!==id)); };
+
+  /* ── experience actions ── */
+  const deleteExp = async (id:number, c:string) => { if(!confirm(`Delete experience at "${c}"?`))return; await sb.from("experiences").delete().eq("id",id); setExperiences(es=>es.filter(e=>e.id!==id)); };
 
   /* ── achievement inline edit ── */
   const updateAch = async (id:number, field:"value"|"label"|"suffix", val:string|number) => {
@@ -148,6 +156,13 @@ export default function AdminPage() {
           onCancel={() => { setShowSkillForm(false); setEditSkill(undefined); }}
         />
       )}
+      {showExpForm && (
+        <ExperienceForm
+          initial={editExp}
+          onSave={() => { setShowExpForm(false); setEditExp(undefined); reload(); }}
+          onCancel={() => { setShowExpForm(false); setEditExp(undefined); }}
+        />
+      )}
 
       {/* ── Header ── */}
       <header className="sticky top-0 z-40 bg-gray-950/90 backdrop-blur border-b border-gray-800 px-6 py-4 flex items-center justify-between">
@@ -176,12 +191,13 @@ export default function AdminPage() {
       <main className="max-w-6xl mx-auto px-6 py-8">
 
         {/* ── Stats ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           {[
-            { label:"Unread Msgs",  value:unread,           icon:Mail,       color:"purple" },
-            { label:"Total Msgs",   value:messages.length,  icon:BarChart2,  color:"cyan"   },
-            { label:"Live Projects",value:visible,           icon:FolderGit2, color:"green"  },
-            { label:"Skills",       value:skills.length,    icon:Zap,        color:"orange" },
+            { label:"Unread Msgs",  value:unread,             icon:Mail,       color:"purple" },
+            { label:"Total Msgs",   value:messages.length,    icon:BarChart2,  color:"cyan"   },
+            { label:"Live Projects",value:visible,             icon:FolderGit2, color:"green"  },
+            { label:"Skills",       value:skills.length,      icon:Zap,        color:"orange" },
+            { label:"Experiences",  value:experiences.length, icon:Briefcase,  color:"pink"   },
           ].map(({ label,value,icon:Icon,color }) => (
             <div key={label} className={statCard(color)}>
               <div className={`p-2.5 rounded-xl bg-${color}-500/10 border border-${color}-500/20 shrink-0`}>
@@ -200,6 +216,7 @@ export default function AdminPage() {
           {([
             { id:"messages",     label:"Messages",     icon:Mail,       badge:unread },
             { id:"projects",     label:"Projects",     icon:FolderGit2, badge:0      },
+            { id:"experiences",  label:"Experiences",  icon:Briefcase,  badge:0      },
             { id:"skills",       label:"Skills",       icon:Zap,        badge:0      },
             { id:"achievements", label:"Achievements", icon:Star,       badge:0      },
           ] as const).map(({ id,label,icon:Icon,badge }) => (
@@ -288,6 +305,45 @@ export default function AdminPage() {
                       </a>
                     )}
                     <button onClick={() => deleteProj(p.id, p.title)}
+                      className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20">
+                      <Trash2 size={14}/>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── EXPERIENCES ── */}
+        {tab==="experiences" && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-gray-400">{experiences.length} experience records</p>
+              <button onClick={() => { setEditExp(undefined); setShowExpForm(true); }}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-600 text-white text-sm font-semibold hover:brightness-110 transition-all">
+                <Plus size={15}/> Add Experience
+              </button>
+            </div>
+            <div className="flex flex-col gap-3">
+              {experiences.length===0 && <p className="text-center text-gray-600 py-16">No experiences yet.</p>}
+              {experiences.map(e => (
+                <div key={e.id} className={`${card} flex items-center justify-between gap-4 hover:border-gray-700 transition-all`}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-white">{e.role}</span>
+                      <span className="text-xs text-purple-400">@ {e.company}</span>
+                      {e.location && <span className="text-xs text-gray-500">({e.location})</span>}
+                    </div>
+                    <p className="text-xs text-gray-400 font-mono mt-1">{e.start_date} - {e.end_date || "Present"}</p>
+                    <p className="text-xs text-gray-500 line-clamp-1 mt-1">{e.description}</p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <button onClick={() => { setEditExp(e); setShowExpForm(true); }}
+                      className="p-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20">
+                      <Pencil size={14}/>
+                    </button>
+                    <button onClick={() => deleteExp(e.id, e.company)}
                       className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20">
                       <Trash2 size={14}/>
                     </button>

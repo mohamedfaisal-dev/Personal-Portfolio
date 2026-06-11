@@ -35,15 +35,65 @@ export default function Contact() {
     setIsSubmitting(true);
     setSubmitError(null);
 
-    const { error } = await submitContactMessage(data);
+    let dbSaved = false;
+    let emailSent = false;
+    let hasBackend = false;
 
-    if (error) {
-      // Supabase failed — try EmailJS as fallback
+    // 1. Try Supabase database storage if configured
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      hasBackend = true;
+      try {
+        const { error } = await submitContactMessage(data);
+        if (!error) {
+          dbSaved = true;
+        } else {
+          console.error("Supabase submission error:", error);
+        }
+      } catch (err) {
+        console.error("Supabase connection error:", err);
+      }
+    }
+
+    // 2. Try Web3Forms email notification if configured
+    const web3Key = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+    if (web3Key) {
+      hasBackend = true;
+      try {
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            access_key: web3Key,
+            name: data.name,
+            email: data.email,
+            subject: data.subject,
+            message: data.message,
+            from_name: "Portfolio Contact Form",
+          }),
+        });
+
+        if (res.ok) {
+          emailSent = true;
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          console.error("Web3Forms error response:", errData);
+        }
+      } catch (err) {
+        console.error("Web3Forms network error:", err);
+      }
+    }
+
+    // 3. Fallback to EmailJS if Web3Forms is not configured or failed
+    if (!emailSent) {
       const serviceId  = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
       const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
       const publicKey  = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
 
       if (serviceId && templateId && publicKey) {
+        hasBackend = true;
         try {
           const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
             method: "POST",
@@ -60,21 +110,31 @@ export default function Contact() {
               },
             }),
           });
-          if (!res.ok) throw new Error("EmailJS failed");
-        } catch {
-          setSubmitError("Something went wrong. Please email me directly.");
-          setIsSubmitting(false);
-          return;
+          if (res.ok) {
+            emailSent = true;
+          } else {
+            console.error("EmailJS failed with status:", res.status);
+          }
+        } catch (err) {
+          console.error("EmailJS network error:", err);
         }
-      } else {
-        // Dev mode: simulate success when neither Supabase nor EmailJS configured
-        console.warn("No backend configured — simulating success.");
-        await new Promise((r) => setTimeout(r, 800));
       }
     }
 
-    setSubmitSuccess(true);
-    reset();
+    if (!hasBackend) {
+      // Dev mode: simulate success when no backend service is configured
+      console.warn("No backend configured — simulating success.");
+      await new Promise((r) => setTimeout(r, 800));
+      setSubmitSuccess(true);
+      reset();
+    } else if (dbSaved || emailSent) {
+      // If either database save or email sending succeeded, treat as success
+      setSubmitSuccess(true);
+      reset();
+    } else {
+      setSubmitError("Failed to send message. Please try again or email directly.");
+    }
+
     setIsSubmitting(false);
     setTimeout(() => setSubmitSuccess(false), 5000);
   };
