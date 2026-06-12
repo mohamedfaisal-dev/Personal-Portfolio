@@ -29,9 +29,12 @@ export default function ProjectForm({ initial, onSave, onCancel }: Props) {
   const save = async () => {
     if (!form.title) { setErr("Title is required"); return; }
     setSaving(true); setErr("");
-    const payload = initial ? { ...form, id: initial.id } : form;
+
+    // Destructure to ensure 'id' is not passed in the payload to avoid Postgres identity column errors
+    const { id, ...payload } = form as any;
+
     const { error } = initial
-      ? await sb.from("projects").update(form).eq("id", initial.id)
+      ? await sb.from("projects").update(payload).eq("id", initial.id)
       : await sb.from("projects").insert(payload);
     if (error) { setErr(error.message); setSaving(false); return; }
     onSave();
