@@ -4,13 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Mail, LogOut, FolderGit2, Star, Zap, RefreshCw,
   ExternalLink, Shield, Eye, EyeOff, Trash2, Pencil,
-  Plus, CheckCircle, BarChart2, Briefcase
+  Plus, CheckCircle, BarChart2, Briefcase, Settings
 } from "lucide-react";
-import { sb, fetchAll, isSupabaseConfigured, type Msg, type Proj, type Skill, type Ach, type Exp, type Tab } from "./shared";
+import { sb, fetchAll, isSupabaseConfigured, type Msg, type Proj, type Skill, type Ach, type Exp, type SiteSettings, type Tab } from "./shared";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import ProjectForm from "./components/ProjectForm";
 import SkillForm, { SKILL_CATEGORIES } from "./components/SkillForm";
 import ExperienceForm from "./components/ExperienceForm";
+import ResumeSettings from "./components/ResumeSettings";
 
 /* ── Login Screen ──────────────────────────────────────────────── */
 function LoginScreen() {
@@ -78,6 +79,7 @@ export default function AdminPage() {
   const [skills,   setSkills]   = useState<Skill[]>([]);
   const [ach,      setAch]      = useState<Ach[]>([]);
   const [experiences, setExperiences] = useState<Exp[]>([]);
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
   const [spinning, setSpinning] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -87,6 +89,7 @@ export default function AdminPage() {
     setSkills(d.skills);
     setAch(d.achievements);
     setExperiences(d.experiences);
+    setSiteSettings(d.siteSettings);
     setFetchError(d.error);
   }, []);
 
@@ -287,6 +290,7 @@ export default function AdminPage() {
             { id:"experiences",  label:"Experiences",  icon:Briefcase,  badge:0      },
             { id:"skills",       label:"Skills",       icon:Zap,        badge:0      },
             { id:"achievements", label:"Achievements", icon:Star,       badge:0      },
+            { id:"settings",     label:"Settings",     icon:Settings,  badge:0      },
           ] as const).map(({ id,label,icon:Icon,badge }) => (
             <button key={id} onClick={() => setTab(id)}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-all ${
@@ -510,6 +514,11 @@ export default function AdminPage() {
               ))}
             </div>
           </div>
+        )}
+
+        {/* ── SETTINGS ── */}
+        {tab==="settings" && (
+          <ResumeSettings settings={siteSettings} onSave={reload} />
         )}
 
       </main>

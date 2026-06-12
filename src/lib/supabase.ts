@@ -73,6 +73,13 @@ export interface Achievement {
   sort_order: number;
 }
 
+export interface SiteSettings {
+  id: number;
+  resume_url: string;
+  resume_filename: string;
+  updated_at: string;
+}
+
 // ─── PROJECTS ─────────────────────────────────────────────────
 
 export async function getProjects(): Promise<Project[] | null> {
@@ -203,6 +210,19 @@ export async function getAchievements(): Promise<Achievement[] | null> {
   return data as Achievement[];
 }
 
+// ─── SITE SETTINGS ────────────────────────────────────────────
+
+export async function getSiteSettings(): Promise<SiteSettings | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("site_settings")
+    .select("*")
+    .eq("id", 1)
+    .maybeSingle();
+  if (error) { console.error("getSiteSettings:", error.message); return null; }
+  return data as SiteSettings | null;
+}
+
 // ─── STORAGE ──────────────────────────────────────────────────
 
 export async function uploadProjectImage(
@@ -221,5 +241,21 @@ export async function uploadProjectImage(
     .from("project-images")
     .getPublicUrl(fileName);
 
+  return { url: data.publicUrl, error: null };
+}
+
+export async function uploadResume(
+  file: File,
+  fileName: string
+): Promise<{ url: string | null; error: string | null }> {
+  if (!supabase) return { url: null, error: "Supabase not configured" };
+
+  const { error } = await supabase.storage
+    .from("resumes")
+    .upload(fileName, file, { upsert: true, contentType: "application/pdf" });
+
+  if (error) return { url: null, error: error.message };
+
+  const { data } = supabase.storage.from("resumes").getPublicUrl(fileName);
   return { url: data.publicUrl, error: null };
 }

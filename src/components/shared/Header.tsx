@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ResumeLink from "@/components/shared/ResumeLink";
 
 const activeNavPillClass =
   "absolute inset-0 rounded-full bg-gradient-to-r from-purple-500/12 via-white/8 to-cyan-500/12 backdrop-blur-xl border border-white/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_0_18px_rgba(168,85,247,0.12)] -z-10";
@@ -128,14 +129,12 @@ export default function Header() {
             {/* Actions */}
             <div className="hidden md:flex items-center space-x-3">
               {/* Resume Button */}
-              <a
-                href="/resume.pdf"
-                download="Mohamed_Faisal_Resume.pdf"
+              <ResumeLink
                 className="flex items-center space-x-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-cyan-600 text-white text-sm font-semibold hover:brightness-110 transition-all duration-300 shadow-md shadow-purple-500/10"
               >
                 <Download size={15} />
                 <span>Resume</span>
-              </a>
+              </ResumeLink>
             </div>
 
             {/* Mobile Menu Actions */}
@@ -198,14 +197,12 @@ export default function Header() {
               </div>
 
               <div className="border-t border-border-glass pt-4">
-                <a
-                  href="/resume.pdf"
-                  download="Mohamed_Faisal_Resume.pdf"
+                <ResumeLink
                   className="flex items-center justify-center space-x-2 w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-semibold hover:brightness-110 transition-all duration-300"
                 >
                   <Download size={18} />
                   <span>Download Resume</span>
-                </a>
+                </ResumeLink>
               </div>
             </div>
           </motion.div>

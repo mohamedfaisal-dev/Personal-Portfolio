@@ -3,6 +3,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { ThemeProvider } from "@/components/shared/ThemeContext";
+import { ResumeProvider } from "@/components/shared/ResumeProvider";
 import CustomCursor from "@/components/shared/CustomCursor";
 import LoadingScreen from "@/components/shared/LoadingScreen";
 import ScrollProgressBar from "@/components/shared/ScrollProgressBar";
@@ -37,6 +38,7 @@ export default function Home() {
 
   return (
     <ThemeProvider>
+      <ResumeProvider>
       {/* Visual Enhancers */}
       <CustomCursor />
       <ScrollProgressBar />
@@ -63,6 +65,7 @@ export default function Home() {
         </main>
         <Footer />
       </div>
+      </ResumeProvider>
     </ThemeProvider>
   );
 }

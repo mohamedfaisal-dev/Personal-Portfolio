@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import { ArrowRight, Download } from "lucide-react";
 import Magnetic from "../ui/Magnetic";
+import ResumeLink from "@/components/shared/ResumeLink";
 
 // Load 3D Canvas dynamically on the client-side only to ensure high performance and zero SSR hydration mismatch.
 const Hero3D = dynamic(() => import("../canvas/Hero3D"), { ssr: false });
@@ -109,14 +110,12 @@ export default function Hero() {
           </Magnetic>
 
           <Magnetic>
-            <a
-              href="/resume.pdf"
-              download="Mohamed_Faisal_Resume.pdf"
+            <ResumeLink
               className="flex items-center space-x-2 px-7 py-3.5 rounded-full bg-white/5 border border-border-glass hover:bg-white/10 text-primary-text text-sm font-semibold transition-all duration-300"
             >
               <Download size={16} />
               <span>Download CV</span>
-            </a>
+            </ResumeLink>
           </Magnetic>
 
           <Magnetic>
