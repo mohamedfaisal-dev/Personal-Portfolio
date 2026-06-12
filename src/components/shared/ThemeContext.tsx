@@ -12,39 +12,16 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const theme: Theme = "dark";
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("portfolio-theme") as Theme | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      if (savedTheme === "light") {
-        document.documentElement.classList.add("light-theme");
-      } else {
-        document.documentElement.classList.remove("light-theme");
-      }
-    } else {
-      // Check system preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (!prefersDark) {
-        setTheme("light");
-        document.documentElement.classList.add("light-theme");
-      } else {
-        setTheme("dark");
-        document.documentElement.classList.remove("light-theme");
-      }
-    }
+    // Force dark mode
+    document.documentElement.classList.remove("light-theme");
+    localStorage.removeItem("portfolio-theme");
   }, []);
 
   const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    localStorage.setItem("portfolio-theme", nextTheme);
-    if (nextTheme === "light") {
-      document.documentElement.classList.add("light-theme");
-    } else {
-      document.documentElement.classList.remove("light-theme");
-    }
+    // No-op - light mode is removed
   };
 
   return (

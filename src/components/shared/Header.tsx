@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeContext";
-import { Menu, X, Sun, Moon, Download } from "lucide-react";
+import { Menu, X, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
@@ -110,15 +110,6 @@ export default function Header() {
 
             {/* Actions */}
             <div className="hidden md:flex items-center space-x-3">
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="p-2.5 rounded-full bg-white/5 border border-border-glass text-secondary-text hover:text-primary-text hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-                aria-label="Toggle Theme"
-              >
-                {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
-
               {/* Resume Button */}
               <a
                 href="/resume.pdf"
@@ -132,14 +123,6 @@ export default function Header() {
 
             {/* Mobile Menu Actions */}
             <div className="flex md:hidden items-center space-x-2">
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-full bg-white/5 border border-border-glass text-secondary-text hover:text-primary-text hover:bg-white/10 transition-all duration-300"
-                aria-label="Toggle Theme"
-              >
-                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-              </button>
-
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="p-2 rounded-full bg-white/5 border border-border-glass text-secondary-text hover:text-primary-text hover:bg-white/10 transition-all duration-300"
