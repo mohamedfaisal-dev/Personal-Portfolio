@@ -1,8 +1,10 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ─────────────────────────────────────────────────────────────────
+# .gitignore — Mohamed Faisal Personal Portfolio
+# ─────────────────────────────────────────────────────────────────
 
-# dependencies
-/node_modules
-/.pnp
+# ── Dependencies ─────────────────────────────────────────────────
+node_modules/
+.pnp
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -10,32 +12,76 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
+# ── Next.js build outputs ─────────────────────────────────────────
+.next/
+out/
+build/
+
+# ── Environment & Secrets (NEVER commit these) ───────────────────
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env.staging
+# .env.example is intentionally committed as a safe template
+
+# ── Scripts containing credentials (contain hardcoded secrets) ───
+/scripts/create-admin.mjs
+
+# ── TypeScript ────────────────────────────────────────────────────
+*.tsbuildinfo
+next-env.d.ts
+
+# ── Testing & Coverage ────────────────────────────────────────────
 /coverage
+*.lcov
+.nyc_output/
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+# ── Debug logs ────────────────────────────────────────────────────
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
 
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
+# ── Vercel ────────────────────────────────────────────────────────
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# ── Supabase local dev ────────────────────────────────────────────
+supabase/.temp/
+supabase/.branches/
+# supabase/migrations/ is intentionally committed (safe SQL only)
+
+# ── OS generated files ────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ── Editor / IDE ──────────────────────────────────────────────────
+.vscode/settings.json
+.vscode/launch.json
+.vscode/*.code-snippets
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+
+# ── Misc ──────────────────────────────────────────────────────────
+*.pem
+*.key
+*.cert
+.cache/
+tmp/
+temp/
