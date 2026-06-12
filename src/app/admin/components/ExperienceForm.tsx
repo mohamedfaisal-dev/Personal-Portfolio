@@ -27,6 +27,7 @@ export default function ExperienceForm({ initial, onSave, onCancel }: Props) {
     if (!form.start_date) { setErr("Start date required"); return; }
     if (!form.description) { setErr("Description required"); return; }
 
+    if (!sb) { setErr("Supabase is not configured"); return; }
     setSaving(true); setErr("");
 
     const pointsArray = form.pointsText
@@ -78,7 +79,7 @@ export default function ExperienceForm({ initial, onSave, onCancel }: Props) {
               <input className={inp} value={form.start_date} onChange={e => setForm(f=>({...f,start_date:e.target.value}))} placeholder="Nov 2025" />
             </div>
             <div>
-              <label className={lbl}>End Date (or 'Present')</label>
+              <label className={lbl}>End Date (or &apos;Present&apos;)</label>
               <input className={inp} value={form.end_date} onChange={e => setForm(f=>({...f,end_date:e.target.value}))} placeholder="Present" />
             </div>
             <div>

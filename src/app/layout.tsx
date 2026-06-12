@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: "Mohamed Faisal Portfolio",
     images: [
       {
-        url: "/images/portfolio.png",
+        url: "/images/placeholder.svg",
         width: 1200,
         height: 630,
         alt: "Mohamed Faisal Portfolio Preview",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Mohamed Faisal | Full Stack Developer & Software Engineer",
     description: "Personal portfolio showcasing premium digital solutions, real-time web applications, and interactive frontend designs.",
-    images: ["/images/portfolio.png"],
+    images: ["/images/placeholder.svg"],
   },
   robots: {
     index: true,
@@ -68,8 +68,8 @@ export default function RootLayout({
     "jobTitle": "Software Engineer & Full Stack Developer",
     "url": "https://mohamedfaisal.dev",
     "sameAs": [
-      "https://github.com",
-      "https://linkedin.com"
+      "https://github.com/mohamedfaisal-dev",
+      "https://linkedin.com/in/mohamed-faisal-dev"
     ],
     "knowsAbout": [
       "Software Engineering",

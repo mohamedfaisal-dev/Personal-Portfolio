@@ -4,6 +4,8 @@ import { sb, type Skill } from "../shared";
 
 const CATS = ["Frontend","Backend","Mobile","Database","DevOps","Tools","Security"];
 
+export { CATS as SKILL_CATEGORIES };
+
 interface Props { initial?: Skill; onSave:()=>void; onCancel:()=>void; }
 
 export default function SkillForm({ initial, onSave, onCancel }: Props) {
@@ -12,6 +14,7 @@ export default function SkillForm({ initial, onSave, onCancel }: Props) {
     category:    initial?.category    ?? "Frontend",
     icon_key:    initial?.icon_key    ?? "",
     proficiency: initial?.proficiency ?? 80,
+    years:       1,
     sort_order:  initial?.sort_order  ?? 0,
     is_visible:  initial?.is_visible  ?? true,
   });
@@ -23,6 +26,7 @@ export default function SkillForm({ initial, onSave, onCancel }: Props) {
 
   const save = async () => {
     if (!form.name) { setErr("Name required"); return; }
+    if (!sb) { setErr("Supabase is not configured"); return; }
     setSaving(true); setErr("");
     const { error } = initial
       ? await sb.from("skills").update(form).eq("id", initial.id)
@@ -56,10 +60,10 @@ export default function SkillForm({ initial, onSave, onCancel }: Props) {
             <input className={inp} value={form.icon_key} onChange={e => setForm(f=>({...f,icon_key:e.target.value}))} placeholder="React" />
           </div>
           <div>
-            <label className={lbl}>Proficiency: {form.proficiency}%</label>
-            <input type="range" min={0} max={100} value={form.proficiency}
-              onChange={e => setForm(f=>({...f,proficiency:+e.target.value}))}
-              className="w-full accent-purple-500" />
+            <label className={lbl}>Experience</label>
+            <div className="w-full px-3 py-2 rounded-xl bg-gray-800/60 border border-gray-700 text-cyan-400 text-sm font-mono">
+              1+ Year
+            </div>
           </div>
           <div>
             <label className={lbl}>Sort Order</label>

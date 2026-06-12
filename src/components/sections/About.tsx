@@ -86,7 +86,7 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              Hi, I'm <strong className="text-primary-text">Mohamed Faisal</strong>, a Full Stack Developer with 1+ year of production experience building and shipping serverless SaaS mobile applications and client-facing web apps.
+              Hi, I&apos;m <strong className="text-primary-text">Mohamed Faisal</strong>, a Full Stack Developer with 1+ year of production experience building and shipping serverless SaaS mobile applications and client-facing web apps.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 15 }}

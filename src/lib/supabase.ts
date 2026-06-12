@@ -47,6 +47,7 @@ export interface Skill {
   category: string;
   icon_key: string | null;
   proficiency: number;
+  years: number;
   sort_order: number;
   is_visible: boolean;
 }
@@ -222,6 +223,3 @@ export async function uploadProjectImage(
 
   return { url: data.publicUrl, error: null };
 }
-
-// Legacy export kept for backwards compat with existing Projects.tsx call
-export { getProjects as default };

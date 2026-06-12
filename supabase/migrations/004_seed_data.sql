@@ -122,4 +122,5 @@ INSERT INTO skills (sort_order, name, category, icon_key, proficiency) VALUES
 (17, 'Docker',         'DevOps',   'Docker',         75),
 (18, 'Git',            'DevOps',   'Git',            92),
 (19, 'Vercel',         'DevOps',   'Vercel',         90),
-(20, 'AWS',            'DevOps',   'AWS',            80);
+(20, 'AWS',            'DevOps',   'AWS',            80),
+(21, 'AWS S3 Bucket',  'DevOps',   'AWS S3 Bucket',  88);

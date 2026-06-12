@@ -11,9 +11,12 @@ const EMPTY: Omit<Proj,"id"> = {
 interface Props { initial?: Proj; onSave:()=>void; onCancel:()=>void; }
 
 export default function ProjectForm({ initial, onSave, onCancel }: Props) {
-  const [form, setForm] = useState<Omit<Proj,"id">>(
-    initial ? { ...initial } : { ...EMPTY }
-  );
+  const [form, setForm] = useState<Omit<Proj,"id">>(() => {
+    if (!initial) return { ...EMPTY };
+    const { id, ...rest } = initial;
+    void id;
+    return rest;
+  });
   const [saving, setSaving] = useState(false);
   const [err, setErr]       = useState("");
 
@@ -28,14 +31,12 @@ export default function ProjectForm({ initial, onSave, onCancel }: Props) {
 
   const save = async () => {
     if (!form.title) { setErr("Title is required"); return; }
+    if (!sb) { setErr("Supabase is not configured"); return; }
     setSaving(true); setErr("");
 
-    // Destructure to ensure 'id' is not passed in the payload to avoid Postgres identity column errors
-    const { id, ...payload } = form as any;
-
     const { error } = initial
-      ? await sb.from("projects").update(payload).eq("id", initial.id)
-      : await sb.from("projects").insert(payload);
+      ? await sb.from("projects").update(form).eq("id", initial.id)
+      : await sb.from("projects").insert(form);
     if (error) { setErr(error.message); setSaving(false); return; }
     onSave();
   };

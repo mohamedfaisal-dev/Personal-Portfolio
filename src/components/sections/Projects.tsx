@@ -9,6 +9,39 @@ import { SiApple, SiGoogleplay } from "react-icons/si";
 import Image from "next/image";
 import { getProjects, type Project as DBProject } from "@/lib/supabase";
 
+const FALLBACK_IMAGE = "/images/placeholder.svg";
+
+function ProjectImage({
+  src,
+  alt,
+  className,
+  sizes,
+  priority = false,
+  fill = false,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  sizes?: string;
+  priority?: boolean;
+  fill?: boolean;
+}) {
+  const [imageSrc, setImageSrc] = useState(src || FALLBACK_IMAGE);
+
+  return (
+    <Image
+      src={imageSrc}
+      alt={alt}
+      fill={fill}
+      sizes={sizes}
+      className={className}
+      priority={priority}
+      onError={() => setImageSrc(FALLBACK_IMAGE)}
+    />
+  );
+}
+
+
 interface Project {
   id: number;
   title: string;
@@ -261,7 +294,7 @@ function CaseStudyModal({ project, onClose }: CaseStudyModalProps) {
 
           {/* ── Hero banner (fixed height, never scrolls) ── */}
           <div className="relative w-full shrink-0 bg-neutral-900 overflow-hidden" style={{ height: "200px" }}>
-            <Image
+            <ProjectImage
               src={project.image}
               alt={project.title}
               fill
@@ -494,7 +527,7 @@ export default function Projects() {
               >
                 {/* Image */}
                 <div className="relative aspect-video w-full overflow-hidden border-b border-border-glass bg-neutral-900">
-                  <Image
+                  <ProjectImage
                     src={project.image}
                     alt={project.title}
                     fill

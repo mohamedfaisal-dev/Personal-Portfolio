@@ -1,9 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTheme } from "./ThemeContext";
 import { Menu, X, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+const activeNavPillClass =
+  "absolute inset-0 rounded-full bg-gradient-to-r from-purple-500/12 via-white/8 to-cyan-500/12 backdrop-blur-xl border border-white/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_0_18px_rgba(168,85,247,0.12)] -z-10";
+
+const activeMobileNavPillClass =
+  "absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/12 via-white/8 to-cyan-500/12 backdrop-blur-xl border border-white/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_0_18px_rgba(168,85,247,0.12)]";
 
 const navLinks = [
   { name: "Home", href: "#home" },
@@ -11,12 +16,11 @@ const navLinks = [
   { name: "Experience", href: "#experience" },
   { name: "Projects", href: "#projects" },
   { name: "Skills", href: "#skills" },
-  { name: "Achievements", href: "#achievements" },
+  { name: "Key Achievements", href: "#achievements" },
   { name: "Contact", href: "#contact" },
 ];
 
 export default function Header() {
-  const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -50,6 +54,7 @@ export default function Header() {
 
     // passive: true tells browser we won't call preventDefault — enables scroll optimizations
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => {
       window.removeEventListener("scroll", handleScroll);
       if (rafId !== null) cancelAnimationFrame(rafId);
@@ -84,28 +89,40 @@ export default function Header() {
             </a>
 
             {/* Desktop Nav Links */}
-            <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={(e) => handleNavClick(e, link.href)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
-                    activeSection === link.href.substring(1)
-                      ? "text-primary-text font-semibold"
-                      : "text-secondary-text hover:text-primary-text"
-                  }`}
-                >
-                  {activeSection === link.href.substring(1) && (
-                    <motion.span
-                      layoutId="activeNavBackground"
-                      className="absolute inset-0 bg-black/[0.06] dark:bg-white/10 rounded-full z-[-1]"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  {link.name}
-                </a>
-              ))}
+            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1">
+              {navLinks.map((link) => {
+                const isActive = activeSection === link.href.substring(1);
+                return (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    onClick={(e) => handleNavClick(e, link.href)}
+                    className={`px-3 lg:px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-medium transition-colors duration-300 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
+                      isActive
+                        ? "text-primary-text font-semibold"
+                        : "text-secondary-text hover:text-primary-text"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="activeNavPill"
+                        className={activeNavPillClass}
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      <span
+                        className={`rounded-full shrink-0 transition-all duration-300 ${
+                          isActive
+                            ? "w-1.5 h-1.5 bg-gradient-to-r from-purple-400 to-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.45)] ring-1 ring-white/20"
+                            : "w-0 h-1.5"
+                        }`}
+                      />
+                      {link.name}
+                    </span>
+                  </a>
+                );
+              })}
             </nav>
 
             {/* Actions */}
@@ -146,21 +163,38 @@ export default function Header() {
             className="fixed inset-x-0 top-24 mx-6 z-[999] md:hidden"
           >
             <div className="glassmorphism mobile-menu-container rounded-3xl p-6 flex flex-col space-y-4 shadow-xl border border-border-glass backdrop-blur-xl">
-              <div className="flex flex-col space-y-3">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    onClick={(e) => handleNavClick(e, link.href)}
-                    className={`px-4 py-2.5 rounded-xl text-base font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
-                      activeSection === link.href.substring(1)
-                        ? "bg-black/[0.06] dark:bg-white/10 text-primary-text"
-                        : "text-secondary-text hover:bg-black/[0.03] dark:hover:bg-white/5 hover:text-primary-text"
-                    }`}
-                  >
-                    {link.name}
-                  </a>
-                ))}
+              <div className="flex flex-col space-y-2">
+                {navLinks.map((link) => {
+                  const isActive = activeSection === link.href.substring(1);
+                  return (
+                    <a
+                      key={link.name}
+                      href={link.href}
+                      onClick={(e) => handleNavClick(e, link.href)}
+                      className={`relative px-4 py-2.5 rounded-xl text-base font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 flex items-center gap-3 overflow-hidden ${
+                        isActive
+                          ? "text-primary-text font-semibold"
+                          : "text-secondary-text hover:bg-white/5 hover:text-primary-text"
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.span
+                          layoutId="activeMobileNavPill"
+                          className={activeMobileNavPillClass}
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <span
+                        className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-300 ${
+                          isActive
+                            ? "bg-gradient-to-r from-purple-400 to-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.45)] ring-1 ring-white/20"
+                            : "bg-white/10"
+                        }`}
+                      />
+                      <span className="relative z-10">{link.name}</span>
+                    </a>
+                  );
+                })}
               </div>
 
               <div className="border-t border-border-glass pt-4">

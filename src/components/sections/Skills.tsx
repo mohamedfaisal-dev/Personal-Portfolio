@@ -50,6 +50,7 @@ import { IoLogoAmplify } from "react-icons/io5";
 
 interface Skill {
   name: string;
+  iconName?: string;
   category: "frontend" | "backend" | "database" | "tools" | "cloud" | "security";
   years: number; // years of experience
   status: "Core" | "Advanced" | "Learning";
@@ -63,7 +64,7 @@ const skillsData: Skill[] = [
   {
     name: "React.js",
     category: "frontend",
-    years: 2,
+    years: 1,
     status: "Core",
     description: "Component lifecycle management, state architecture (Redux/Zustand), and high-performance custom hooks.",
     color: "from-purple-500 to-indigo-500",
@@ -72,7 +73,7 @@ const skillsData: Skill[] = [
   {
     name: "Next.js",
     category: "frontend",
-    years: 2,
+    years: 1,
     status: "Core",
     description: "Server Actions, App Router routing, Incremental Static Regeneration (ISR), and static site generation.",
     color: "from-zinc-700 to-zinc-900",
@@ -81,7 +82,7 @@ const skillsData: Skill[] = [
   {
     name: "React Native",
     category: "frontend",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "Cross-platform mobile applications, App Store/Play Store build signing and release deployments.",
     color: "from-cyan-500 to-blue-600",
@@ -90,7 +91,7 @@ const skillsData: Skill[] = [
   {
     name: "TypeScript",
     category: "frontend",
-    years: 2,
+    years: 1,
     status: "Advanced",
     description: "Generics engineering, mapped types, intersection types, and strict interface patterns.",
     color: "from-blue-600 to-cyan-500",
@@ -99,7 +100,7 @@ const skillsData: Skill[] = [
   {
     name: "Tailwind CSS",
     category: "frontend",
-    years: 2,
+    years: 1,
     status: "Core",
     description: "Custom design token variables, fluid utilities, CSS grid structures, and responsive breakpoint systems.",
     color: "from-teal-400 to-emerald-400",
@@ -108,7 +109,7 @@ const skillsData: Skill[] = [
   {
     name: "JavaScript",
     category: "frontend",
-    years: 3,
+    years: 1,
     status: "Core",
     description: "Asynchronous workflows, lexical scopes, prototypal networks, and event loops.",
     color: "from-yellow-400 to-amber-500",
@@ -117,7 +118,7 @@ const skillsData: Skill[] = [
   {
     name: "HTML5 & CSS3",
     category: "frontend",
-    years: 3,
+    years: 1,
     status: "Core",
     description: "Semantic structures, accessible layout schemas, flexbox, custom layouts, and animation keyframes.",
     color: "from-orange-500 to-red-500",
@@ -128,7 +129,7 @@ const skillsData: Skill[] = [
   {
     name: "Node.js",
     category: "backend",
-    years: 2,
+    years: 1,
     status: "Advanced",
     description: "Event-driven architecture, file streams, package pipelines, and backend integration modules.",
     color: "from-green-500 to-emerald-400",
@@ -137,7 +138,7 @@ const skillsData: Skill[] = [
   {
     name: "Express.js",
     category: "backend",
-    years: 2,
+    years: 1,
     status: "Advanced",
     description: "Modular route definitions, query parsers, verification middlewares, and REST API deployment.",
     color: "from-neutral-400 to-neutral-600",
@@ -165,7 +166,7 @@ const skillsData: Skill[] = [
   {
     name: "REST API Design",
     category: "backend",
-    years: 2,
+    years: 1,
     status: "Core",
     description: "RESTful endpoint architecture, versioning strategies, status codes, and standardized request/response schemas.",
     color: "from-green-500 to-teal-500",
@@ -176,7 +177,7 @@ const skillsData: Skill[] = [
   {
     name: "DynamoDB",
     category: "database",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "NoSQL schema scaling, partition keys, global secondary indexes, and cloud storage triggers.",
     color: "from-blue-500 to-indigo-500",
@@ -185,7 +186,7 @@ const skillsData: Skill[] = [
   {
     name: "MongoDB",
     category: "database",
-    years: 2,
+    years: 1,
     status: "Advanced",
     description: "Document structure indexes, query aggregation pipes, and high-performance collection lookups.",
     color: "from-emerald-600 to-green-500",
@@ -194,7 +195,7 @@ const skillsData: Skill[] = [
   {
     name: "MySQL",
     category: "database",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "Relational table schemas, complex joins, stored procedures, and query optimization with indexes.",
     color: "from-blue-600 to-orange-500",
@@ -203,7 +204,7 @@ const skillsData: Skill[] = [
   {
     name: "PostgreSQL",
     category: "database",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "Advanced SQL queries, JSONB columns, full-text search, and Row Level Security (RLS) policies.",
     color: "from-sky-600 to-blue-700",
@@ -221,7 +222,7 @@ const skillsData: Skill[] = [
   {
     name: "Firebase",
     category: "database",
-    years: 2,
+    years: 1,
     status: "Advanced",
     description: "Firestore document real-time sync, cloud authentication providers, and serverless background tasks.",
     color: "from-amber-500 to-orange-500",
@@ -232,7 +233,7 @@ const skillsData: Skill[] = [
   {
     name: "Cursor",
     category: "tools",
-    years: 2,
+    years: 1,
     status: "Core",
     description: "AI-native editing environment, agent orchestration, and inline codebase index mapping.",
     color: "from-cyan-400 to-blue-500",
@@ -250,7 +251,7 @@ const skillsData: Skill[] = [
   {
     name: "Claude AI",
     category: "tools",
-    years: 2,
+    years: 1,
     status: "Core",
     description: "Autonomous agent execution context, system prompts, and multi-file code editing integrations.",
     color: "from-orange-400 to-amber-500",
@@ -286,7 +287,7 @@ const skillsData: Skill[] = [
   {
     name: "Git & GitHub",
     category: "tools",
-    years: 3,
+    years: 1,
     status: "Core",
     description: "Branch merging models, commit logging, pull request audits, and GitHub actions integrations.",
     color: "from-purple-500 to-pink-500",
@@ -295,7 +296,7 @@ const skillsData: Skill[] = [
   {
     name: "Bitbucket",
     category: "tools",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "Git-based code collaboration, pull request workflows, branch permissions, and Jira integrations.",
     color: "from-blue-500 to-indigo-600",
@@ -304,7 +305,7 @@ const skillsData: Skill[] = [
   {
     name: "Postman",
     category: "tools",
-    years: 2,
+    years: 1,
     status: "Core",
     description: "API payload schema checks, endpoint regression testing, variables, and request environments.",
     color: "from-orange-500 to-amber-500",
@@ -313,7 +314,7 @@ const skillsData: Skill[] = [
   {
     name: "VS Code",
     category: "tools",
-    years: 3,
+    years: 1,
     status: "Core",
     description: "Tailored debug configurations, terminal automation settings, and workspace environment extensions.",
     color: "from-blue-500 to-sky-500",
@@ -324,7 +325,7 @@ const skillsData: Skill[] = [
   {
     name: "AWS",
     category: "cloud",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "Cloud architecture deployment, VPC networks, secure permission schemas, and service automation.",
     color: "from-orange-400 to-amber-600",
@@ -333,25 +334,25 @@ const skillsData: Skill[] = [
   {
     name: "AWS Lambda",
     category: "cloud",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "Event-driven serverless functions, resource scaling rules, Cold Start mitigations, and cross-service integrations.",
     color: "from-amber-600 to-orange-500",
     glowColor: "rgba(217, 119, 6, 0.4)",
   },
   {
-    name: "Amazon S3",
+    name: "AWS S3 Bucket",
     category: "cloud",
-    years: 1.5,
+    years: 1,
     status: "Core",
-    description: "Scalable object storage buckets, access control policy structures, bucket lifecycles, and CloudFront CDN routing.",
+    description: "Scalable S3 object storage — bucket provisioning, IAM policies, versioning, lifecycle rules, CORS, and CloudFront static asset delivery.",
     color: "from-green-600 to-emerald-500",
     glowColor: "rgba(22, 163, 74, 0.4)",
   },
   {
     name: "Amazon EC2",
     category: "cloud",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "Virtual instance scaling groups, security group firewalls, EBS volumes, and target routing schemes.",
     color: "from-orange-500 to-amber-500",
@@ -360,7 +361,7 @@ const skillsData: Skill[] = [
   {
     name: "AWS API Gateway",
     category: "cloud",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "RESTful and WebSocket routing endpoints, custom authorizers, usage plan throttling, and VPC links.",
     color: "from-pink-600 to-rose-500",
@@ -369,7 +370,7 @@ const skillsData: Skill[] = [
   {
     name: "AWS IAM",
     category: "cloud",
-    years: 1.5,
+    years: 1,
     status: "Core",
     description: "Policy rules configuration, role assumptions, cross-account capabilities, and identity authentication controls.",
     color: "from-red-600 to-rose-600",
@@ -378,7 +379,7 @@ const skillsData: Skill[] = [
   {
     name: "AWS Cognito",
     category: "cloud",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "User pool management, identity federation, JWT token authentication, and MFA configuration.",
     color: "from-red-600 to-rose-500",
@@ -396,7 +397,7 @@ const skillsData: Skill[] = [
   {
     name: "Amazon RDS",
     category: "cloud",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "Relational database provisioning, Multi-AZ backups, auto-scaling storage engines, and performance read-replicas.",
     color: "from-blue-600 to-indigo-600",
@@ -424,7 +425,7 @@ const skillsData: Skill[] = [
   {
     name: "Vercel",
     category: "cloud",
-    years: 2,
+    years: 1,
     status: "Core",
     description: "Serverless Next.js deployments, edge functions, preview environments, and CI/CD pipeline integrations.",
     color: "from-zinc-600 to-zinc-800",
@@ -433,7 +434,7 @@ const skillsData: Skill[] = [
   {
     name: "Netlify",
     category: "cloud",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "JAMstack site hosting, continuous deployment from Git, serverless functions, and form handling.",
     color: "from-teal-500 to-cyan-500",
@@ -444,7 +445,7 @@ const skillsData: Skill[] = [
   {
     name: "Stripe",
     category: "tools",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "Secure payment gateway flows, webhook handlers, customer billing portals, and mobile SDK topups.",
     color: "from-purple-500 to-indigo-600",
@@ -462,7 +463,7 @@ const skillsData: Skill[] = [
   {
     name: "Firebase Cloud Messaging (FCM)",
     category: "tools",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "Real-time mobile push notifications, channel registration tokens, and background payload messaging.",
     color: "from-amber-500 to-amber-600",
@@ -471,7 +472,7 @@ const skillsData: Skill[] = [
   {
     name: "Resend",
     category: "tools",
-    years: 1.5,
+    years: 1,
     status: "Advanced",
     description: "Transactional email service setup, DKIM verification, and template design setups.",
     color: "from-zinc-500 to-zinc-700",
@@ -482,7 +483,7 @@ const skillsData: Skill[] = [
   {
     name: "OWASP Top 10",
     category: "security",
-    years: 2,
+    years: 1,
     status: "Advanced",
     description: "Application security threat modeling, vulnerability mitigation, and secure SDLC practices.",
     color: "from-red-500 to-rose-600",
@@ -491,7 +492,7 @@ const skillsData: Skill[] = [
   {
     name: "JWT Auth",
     category: "security",
-    years: 2,
+    years: 1,
     status: "Core",
     description: "Stateless token authentication flows, RS256/HS256 signing, refresh token rotation, and token invalidation.",
     color: "from-violet-500 to-purple-600",
@@ -500,7 +501,7 @@ const skillsData: Skill[] = [
   {
     name: "API Security",
     category: "security",
-    years: 2,
+    years: 1,
     status: "Advanced",
     description: "Rate limiting, CORS policy enforcement, header hardening, API key management, and injection prevention.",
     color: "from-orange-500 to-red-500",
@@ -509,7 +510,7 @@ const skillsData: Skill[] = [
   {
     name: "Secure Coding",
     category: "security",
-    years: 2,
+    years: 1,
     status: "Advanced",
     description: "Input validation, parameterized queries, least-privilege access, secrets management, and dependency auditing.",
     color: "from-emerald-500 to-green-600",
@@ -518,7 +519,7 @@ const skillsData: Skill[] = [
   {
     name: "Input Validation",
     category: "security",
-    years: 2,
+    years: 1,
     status: "Core",
     description: "Schema validation with Zod/Joi, sanitization pipelines, XSS/SQLi prevention, and type-safe form guards.",
     color: "from-teal-500 to-cyan-600",
@@ -643,6 +644,9 @@ function TechIcon({ name }: { name: string }) {
         </svg>
       );
     case "Amazon S3":
+    case "AWS S3":
+    case "AWS S3 Bucket":
+    case "S3":
       return (
         <svg viewBox="0 0 256 256" className={sizeClass}>
           <defs>
@@ -810,7 +814,6 @@ function TerminalText({ text }: { text: string }) {
   const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {
-    setDisplayedText("");
     let i = 0;
     const interval = setInterval(() => {
       if (i < text.length) {
@@ -831,11 +834,37 @@ function TerminalText({ text }: { text: string }) {
   );
 }
 
+function resolveIconName(db: DBSkill, displayName: string): string {
+  if (db.icon_key) return db.icon_key;
+
+  const aliases: Record<string, string> = {
+    React: "React.js",
+    "REST API": "REST API Design",
+    Git: "Git & GitHub",
+    S3: "AWS S3 Bucket",
+    "AWS S3": "AWS S3 Bucket",
+    "Amazon S3": "AWS S3 Bucket",
+  };
+
+  return aliases[db.name] ?? displayName;
+}
+
 function mapDBSkill(db: DBSkill): Skill {
   // Find static metadata in the existing skillsData array
-  const staticSkill = skillsData.find(s => s.name.toLowerCase() === db.name.toLowerCase() || 
-                                          (db.name === "React" && s.name === "React.js") ||
-                                          (db.name === "React.js" && s.name === "React"));
+  const staticSkill = skillsData.find(s => {
+    const dbName = db.name.toLowerCase();
+    const staticName = s.name.toLowerCase();
+    if (dbName === staticName) return true;
+    if (db.name === "React" && s.name === "React.js") return true;
+    if (db.name === "React.js" && s.name === "React") return true;
+    if (
+      (dbName === "s3" || dbName === "aws s3" || dbName === "amazon s3") &&
+      s.name === "AWS S3 Bucket"
+    ) {
+      return true;
+    }
+    return false;
+  });
 
   const meta = staticSkill || {
     years: 1,
@@ -850,14 +879,16 @@ function mapDBSkill(db: DBSkill): Skill {
   if (dbCat === "frontend") category = "frontend";
   else if (dbCat === "backend") category = "backend";
   else if (dbCat === "database") category = "database";
-  else if (dbCat === "devops" || dbCat === "cloud" || dbCat === "mobile") category = "cloud";
+  else if (dbCat === "devops" || dbCat === "cloud") category = "cloud";
+  else if (dbCat === "mobile") category = "frontend";
   else if (dbCat === "tools") category = "tools";
   else if (dbCat === "security") category = "security";
 
   return {
     name: db.name,
+    iconName: resolveIconName(db, staticSkill?.name ?? db.name),
     category,
-    years: meta.years,
+    years: db.years ?? 1,
     status: meta.status,
     description: meta.description,
     color: meta.color,
@@ -990,7 +1021,7 @@ export default function Skills() {
                     >
                       {/* Brand Logo Container */}
                       <div className="w-16 h-16 flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform duration-300">
-                        <TechIcon name={skill.name} />
+                        <TechIcon name={skill.iconName ?? skill.name} />
                       </div>
 
                       {/* Skill Info */}
@@ -1063,7 +1094,7 @@ export default function Skills() {
                     <div className="flex justify-between">
                       <span className="text-secondary-text">EXPERIENCE:</span>
                       <span className="text-primary-text font-semibold">
-                        {selectedSkill.years} Years Active
+                        {selectedSkill.years}+ Year Active
                       </span>
                     </div>
                   </div>
@@ -1074,7 +1105,7 @@ export default function Skills() {
                       Decoded_Capabilities:
                     </span>
                     <p className="text-primary-text leading-relaxed min-h-[80px] text-xs">
-                      <TerminalText text={selectedSkill.description} />
+                      <TerminalText key={selectedSkill.description} text={selectedSkill.description} />
                     </p>
                   </div>
                 </div>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export default function CustomCursor() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [enabled, setEnabled] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
 
@@ -16,11 +16,10 @@ export default function CustomCursor() {
   const cursorYSpring = useSpring(cursorY, springConfig);
 
   useEffect(() => {
-    // Check if device supports touch
     const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
     if (isTouchDevice) return;
 
-    setIsVisible(true);
+    setEnabled(true);
     document.body.classList.add("custom-cursor-active");
 
     const moveCursor = (e: MouseEvent) => {
@@ -30,17 +29,17 @@ export default function CustomCursor() {
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const isInteractive = 
-        target.tagName === "A" || 
-        target.tagName === "BUTTON" || 
-        target.closest("a") || 
-        target.closest("button") || 
+      const isInteractive =
+        target.tagName === "A" ||
+        target.tagName === "BUTTON" ||
+        target.closest("a") ||
+        target.closest("button") ||
         target.closest('input[type="submit"]') ||
         target.closest("[role='button']") ||
         target.tagName === "INPUT" ||
         target.tagName === "TEXTAREA" ||
         target.tagName === "SELECT";
-      
+
       setIsHovered(!!isInteractive);
     };
 
@@ -61,7 +60,7 @@ export default function CustomCursor() {
     };
   }, [cursorX, cursorY]);
 
-  if (!isVisible) return null;
+  if (!enabled) return null;
 
   return (
     <>

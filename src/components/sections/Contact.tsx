@@ -122,11 +122,14 @@ export default function Contact() {
     }
 
     if (!hasBackend) {
-      // Dev mode: simulate success when no backend service is configured
-      console.warn("No backend configured — simulating success.");
-      await new Promise((r) => setTimeout(r, 800));
-      setSubmitSuccess(true);
-      reset();
+      if (process.env.NODE_ENV === "development") {
+        console.warn("No backend configured — simulating success in development only.");
+        await new Promise((r) => setTimeout(r, 800));
+        setSubmitSuccess(true);
+        reset();
+      } else {
+        setSubmitError("Contact form is not configured. Please email mohamedfaisal.dev@gmail.com directly.");
+      }
     } else if (dbSaved || emailSent) {
       // If either database save or email sending succeeded, treat as success
       setSubmitSuccess(true);
@@ -177,7 +180,7 @@ export default function Contact() {
           <div className="md:col-span-5 flex flex-col justify-between gap-8">
             <div className="flex flex-col gap-6">
               <h3 className="text-2xl font-bold font-space text-primary-text">
-                Let's discuss a project.
+                Let&apos;s discuss a project.
               </h3>
               <p className="text-sm text-secondary-text leading-relaxed max-w-sm">
                 Have a job opening, a freelance project, or simply want to say hello? Fill out the

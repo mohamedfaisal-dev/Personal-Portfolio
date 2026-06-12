@@ -4,11 +4,12 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Mail, LogOut, FolderGit2, Star, Zap, RefreshCw,
   ExternalLink, Shield, Eye, EyeOff, Trash2, Pencil,
-  Plus, CheckCircle, Circle, BarChart2, Briefcase
+  Plus, CheckCircle, BarChart2, Briefcase
 } from "lucide-react";
-import { sb, fetchAll, type Msg, type Proj, type Skill, type Ach, type Exp, type Tab } from "./shared";
+import { sb, fetchAll, isSupabaseConfigured, type Msg, type Proj, type Skill, type Ach, type Exp, type Tab } from "./shared";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import ProjectForm from "./components/ProjectForm";
-import SkillForm   from "./components/SkillForm";
+import SkillForm, { SKILL_CATEGORIES } from "./components/SkillForm";
 import ExperienceForm from "./components/ExperienceForm";
 
 /* ── Login Screen ──────────────────────────────────────────────── */
@@ -19,9 +20,14 @@ function LoginScreen() {
   const [busy,  setBusy]      = useState(false);
 
   const login = async () => {
+    if (!sb) return;
     setBusy(true); setErr("");
-    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if (error) { setErr(error.message); setBusy(false); }
+    try {
+      const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+      if (error) setErr(error.message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -65,7 +71,7 @@ function LoginScreen() {
 /* ── Main Dashboard ────────────────────────────────────────────── */
 export default function AdminPage() {
   const [session,  setSession]  = useState<unknown>(null);
-  const [loading,  setLoading]  = useState(true);
+  const [loading,  setLoading]  = useState(() => isSupabaseConfigured());
   const [tab,      setTab]      = useState<Tab>("messages");
   const [messages, setMessages] = useState<Msg[]>([]);
   const [projects, setProjects] = useState<Proj[]>([]);
@@ -73,8 +79,23 @@ export default function AdminPage() {
   const [ach,      setAch]      = useState<Ach[]>([]);
   const [experiences, setExperiences] = useState<Exp[]>([]);
   const [spinning, setSpinning] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  /* project/skill/experience modal state */
+  const applyDashboardData = useCallback((d: Awaited<ReturnType<typeof fetchAll>>) => {
+    setMessages(d.messages);
+    setProjects(d.projects);
+    setSkills(d.skills);
+    setAch(d.achievements);
+    setExperiences(d.experiences);
+    setFetchError(d.error);
+  }, []);
+
+  const reload = useCallback(async () => {
+    setSpinning(true);
+    const d = await fetchAll();
+    applyDashboardData(d);
+    setSpinning(false);
+  }, [applyDashboardData]);
   const [showProjForm,  setShowProjForm]  = useState(false);
   const [editProj,      setEditProj]      = useState<Proj|undefined>();
   const [showSkillForm, setShowSkillForm] = useState(false);
@@ -82,24 +103,56 @@ export default function AdminPage() {
   const [showExpForm,   setShowExpForm]   = useState(false);
   const [editExp,       setEditExp]       = useState<Exp|undefined>();
 
-  /* ── auth ── */
+  /* ── auth + initial data load ── */
   useEffect(() => {
-    sb.auth.getSession().then(({ data }) => { setSession(data.session); setLoading(false); });
-    const { data: { subscription } } = sb.auth.onAuthStateChange((_e,s) => setSession(s));
-    return () => subscription.unsubscribe();
-  }, []);
+    if (!sb) return;
 
-  /* ── load data ── */
-  const reload = useCallback(async () => {
-    setSpinning(true);
-    const d = await fetchAll();
-    setMessages(d.messages); setProjects(d.projects);
-    setSkills(d.skills);     setAch(d.achievements);
-    setExperiences(d.experiences);
-    setSpinning(false);
-  }, []);
+    let cancelled = false;
 
-  useEffect(() => { if (session) reload(); }, [session, reload]);
+    const loadDashboard = async (activeSession: unknown) => {
+      if (!activeSession) return;
+      setSpinning(true);
+      const d = await fetchAll();
+      if (cancelled) return;
+      applyDashboardData(d);
+      setSpinning(false);
+    };
+
+    sb.auth.getSession().then(({ data }) => {
+      if (cancelled) return;
+      setSession(data.session);
+      setLoading(false);
+      void loadDashboard(data.session);
+    });
+
+    const { data: { subscription } } = sb.auth.onAuthStateChange((_e, s) => {
+      setSession(s);
+      void loadDashboard(s);
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
+  }, [applyDashboardData]);
+
+  if (!isSupabaseConfigured()) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-gray-900 border border-gray-800 rounded-3xl p-8 text-center">
+          <Shield size={28} className="text-purple-400 mx-auto mb-4" />
+          <h1 className="text-lg font-bold text-white mb-2">Supabase Not Configured</h1>
+          <p className="text-sm text-gray-400">
+            Add <code className="text-cyan-400">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+            <code className="text-cyan-400">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> to your{" "}
+            <code className="text-cyan-400">.env.local</code> file, then restart the dev server.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const adminSb = sb as SupabaseClient;
 
   if (loading) return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center">
@@ -114,28 +167,34 @@ export default function AdminPage() {
   const visible = projects.filter(p => p.is_visible).length;
 
   /* ── message actions ── */
-  const markRead  = async (id:number) => { await sb.from("contact_messages").update({is_read:true}).eq("id",id); setMessages(ms=>ms.map(m=>m.id===id?{...m,is_read:true}:m)); };
-  const deleteMsg = async (id:number) => { if(!confirm("Delete?"))return; await sb.from("contact_messages").delete().eq("id",id); setMessages(ms=>ms.filter(m=>m.id!==id)); };
+  const markRead  = async (id:number) => { await adminSb.from("contact_messages").update({is_read:true}).eq("id",id); setMessages(ms=>ms.map(m=>m.id===id?{...m,is_read:true}:m)); };
+  const deleteMsg = async (id:number) => { if(!confirm("Delete?"))return; await adminSb.from("contact_messages").delete().eq("id",id); setMessages(ms=>ms.filter(m=>m.id!==id)); };
 
   /* ── project actions ── */
-  const toggleVis   = async (id:number, cur:boolean) => { await sb.from("projects").update({is_visible:!cur}).eq("id",id); setProjects(ps=>ps.map(p=>p.id===id?{...p,is_visible:!cur}:p)); };
-  const deleteProj  = async (id:number, t:string)    => { if(!confirm(`Delete "${t}"?`))return; await sb.from("projects").delete().eq("id",id); setProjects(ps=>ps.filter(p=>p.id!==id)); };
+  const toggleVis   = async (id:number, cur:boolean) => { await adminSb.from("projects").update({is_visible:!cur}).eq("id",id); setProjects(ps=>ps.map(p=>p.id===id?{...p,is_visible:!cur}:p)); };
+  const deleteProj  = async (id:number, t:string)    => { if(!confirm(`Delete "${t}"?`))return; await adminSb.from("projects").delete().eq("id",id); setProjects(ps=>ps.filter(p=>p.id!==id)); };
 
   /* ── skill actions ── */
-  const deleteSkill = async (id:number, n:string) => { if(!confirm(`Delete "${n}"?`))return; await sb.from("skills").delete().eq("id",id); setSkills(ss=>ss.filter(s=>s.id!==id)); };
+  const deleteSkill = async (id:number, n:string) => { if(!confirm(`Delete "${n}"?`))return; await adminSb.from("skills").delete().eq("id",id); setSkills(ss=>ss.filter(s=>s.id!==id)); };
 
   /* ── experience actions ── */
-  const deleteExp = async (id:number, c:string) => { if(!confirm(`Delete experience at "${c}"?`))return; await sb.from("experiences").delete().eq("id",id); setExperiences(es=>es.filter(e=>e.id!==id)); };
+  const deleteExp = async (id:number, c:string) => { if(!confirm(`Delete experience at "${c}"?`))return; await adminSb.from("experiences").delete().eq("id",id); setExperiences(es=>es.filter(e=>e.id!==id)); };
 
   /* ── achievement inline edit ── */
   const updateAch = async (id:number, field:"value"|"label"|"suffix", val:string|number) => {
-    await sb.from("achievements").update({[field]:val}).eq("id",id);
+    await adminSb.from("achievements").update({[field]:val}).eq("id",id);
     setAch(as=>as.map(a=>a.id===id?{...a,[field]:val}:a));
   };
 
   /* ── styles ── */
   const card = "p-5 rounded-2xl border border-gray-800 bg-gray-900";
-  const statCard = (color:string) => `${card} flex items-center gap-4`;
+  const statColors: Record<string, { bg: string; border: string; text: string }> = {
+    purple: { bg: "bg-purple-500/10", border: "border-purple-500/20", text: "text-purple-400" },
+    cyan:   { bg: "bg-cyan-500/10",   border: "border-cyan-500/20",   text: "text-cyan-400"   },
+    green:  { bg: "bg-green-500/10",  border: "border-green-500/20",  text: "text-green-400"  },
+    orange: { bg: "bg-orange-500/10", border: "border-orange-500/20", text: "text-orange-400" },
+    pink:   { bg: "bg-pink-500/10",   border: "border-pink-500/20",   text: "text-pink-400"   },
+  };
 
   /* ── render ── */
   return (
@@ -181,7 +240,7 @@ export default function AdminPage() {
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white text-xs transition-all">
             <ExternalLink size={13}/> Site
           </a>
-          <button onClick={() => sb.auth.signOut()}
+          <button onClick={() => adminSb.auth.signOut()}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs border border-red-500/20 transition-all">
             <LogOut size={13}/> Logout
           </button>
@@ -189,6 +248,12 @@ export default function AdminPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-8">
+
+        {fetchError && (
+          <div className="mb-6 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            {fetchError}
+          </div>
+        )}
 
         {/* ── Stats ── */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
@@ -198,17 +263,20 @@ export default function AdminPage() {
             { label:"Live Projects",value:visible,             icon:FolderGit2, color:"green"  },
             { label:"Skills",       value:skills.length,      icon:Zap,        color:"orange" },
             { label:"Experiences",  value:experiences.length, icon:Briefcase,  color:"pink"   },
-          ].map(({ label,value,icon:Icon,color }) => (
-            <div key={label} className={statCard(color)}>
-              <div className={`p-2.5 rounded-xl bg-${color}-500/10 border border-${color}-500/20 shrink-0`}>
-                <Icon size={18} className={`text-${color}-400`} />
+          ].map(({ label,value,icon:Icon,color }) => {
+            const styles = statColors[color];
+            return (
+            <div key={label} className={`${card} flex items-center gap-4`}>
+              <div className={`p-2.5 rounded-xl ${styles.bg} border ${styles.border} shrink-0`}>
+                <Icon size={18} className={styles.text} />
               </div>
               <div>
                 <p className="text-2xl font-bold">{value}</p>
                 <p className="text-xs text-gray-500">{label}</p>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* ── Tabs ── */}
@@ -365,7 +433,7 @@ export default function AdminPage() {
               </button>
             </div>
             <div className="flex flex-col gap-2">
-              {["Frontend","Backend","Mobile","Database","DevOps"].map(cat => {
+              {SKILL_CATEGORIES.map(cat => {
                 const catSkills = skills.filter(s => s.category===cat);
                 if (!catSkills.length) return null;
                 return (
@@ -381,13 +449,9 @@ export default function AdminPage() {
                                 {s.is_visible?"visible":"hidden"}
                               </span>
                             </div>
-                            <div className="flex items-center gap-3">
-                              <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                                <div className="h-full bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full"
-                                  style={{width:`${s.proficiency}%`}} />
-                              </div>
-                              <span className="text-xs text-gray-400 shrink-0">{s.proficiency}%</span>
-                            </div>
+                            <span className="text-xs text-cyan-400 font-mono shrink-0">
+                              {(s.years ?? 1)}+ Year
+                            </span>
                           </div>
                           <div className="flex gap-2 shrink-0">
                             <button onClick={() => { setEditSkill(s); setShowSkillForm(true); }}

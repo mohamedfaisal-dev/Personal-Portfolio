@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS skills (
   category    text NOT NULL DEFAULT 'Frontend',
   icon_key    text,
   proficiency int DEFAULT 80 CHECK (proficiency BETWEEN 0 AND 100),
+  years       int DEFAULT 1 CHECK (years >= 1),
   sort_order  int DEFAULT 0,
   is_visible  boolean DEFAULT true
 );

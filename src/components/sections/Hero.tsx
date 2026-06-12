@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
-import { ArrowRight, Download, FileText } from "lucide-react";
+import { ArrowRight, Download } from "lucide-react";
 import Magnetic from "../ui/Magnetic";
 
 // Load 3D Canvas dynamically on the client-side only to ensure high performance and zero SSR hydration mismatch.
@@ -59,7 +59,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
           className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 font-space text-primary-text leading-none"
         >
-          Hello, I'm{" "}
+          Hello, I&apos;m{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-500 to-cyan-400">
             Mohamed Faisal
           </span>

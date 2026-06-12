@@ -1,34 +1,34 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+
+function createSpherePositions(count: number) {
+  const pos = new Float32Array(count * 3);
+
+  for (let i = 0; i < count; i++) {
+    const u = Math.random();
+    const v = Math.random();
+    const theta = u * 2.0 * Math.PI;
+    const phi = Math.acos(2.0 * v - 1.0);
+    const r = 2.0 + Math.random() * 2.5;
+
+    pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    pos[i * 3 + 2] = r * Math.cos(phi);
+  }
+
+  return pos;
+}
 
 function ParticleSphere() {
   const pointsRef = useRef<THREE.Points>(null);
 
-  // Detect low-powered device and reduce particle count accordingly
-  const isMobile =
-    typeof window !== "undefined" && window.innerWidth < 768;
-  const count = isMobile ? 600 : 1200;
+  const count =
+    typeof window !== "undefined" && window.innerWidth < 768 ? 600 : 1200;
 
-  const [positions] = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-
-    for (let i = 0; i < count; i++) {
-      const u = Math.random();
-      const v = Math.random();
-      const theta = u * 2.0 * Math.PI;
-      const phi = Math.acos(2.0 * v - 1.0);
-      const r = 2.0 + Math.random() * 2.5;
-
-      pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-      pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      pos[i * 3 + 2] = r * Math.cos(phi);
-    }
-
-    return [pos];
-  }, [count]);
+  const [positions] = useState(() => createSpherePositions(count));
 
   useFrame((state) => {
     const elapsed = state.clock.getElapsedTime();
