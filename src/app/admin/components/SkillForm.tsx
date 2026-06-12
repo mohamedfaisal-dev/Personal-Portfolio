@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { sb, type Skill } from "../shared";
 
-const CATS = ["Frontend","Backend","Mobile","Database","DevOps"];
+const CATS = ["Frontend","Backend","Mobile","Database","DevOps","Tools","Security"];
 
 interface Props { initial?: Skill; onSave:()=>void; onCancel:()=>void; }
 

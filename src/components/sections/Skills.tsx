@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Code2, Globe, Database, Terminal, Wrench, Shield, Cpu, Activity } from "lucide-react";
+import { getSkills, type Skill as DBSkill } from "@/lib/supabase";
 
 import {
   SiReact,
@@ -830,26 +831,80 @@ function TerminalText({ text }: { text: string }) {
   );
 }
 
+function mapDBSkill(db: DBSkill): Skill {
+  // Find static metadata in the existing skillsData array
+  const staticSkill = skillsData.find(s => s.name.toLowerCase() === db.name.toLowerCase() || 
+                                          (db.name === "React" && s.name === "React.js") ||
+                                          (db.name === "React.js" && s.name === "React"));
+
+  const meta = staticSkill || {
+    years: 1,
+    status: "Learning" as const,
+    description: "Dynamic skill managed via Supabase CMS.",
+    color: "from-zinc-500 to-zinc-700",
+    glowColor: "rgba(115, 115, 115, 0.4)",
+  };
+
+  let category: Skill["category"] = "frontend";
+  const dbCat = db.category.toLowerCase();
+  if (dbCat === "frontend") category = "frontend";
+  else if (dbCat === "backend") category = "backend";
+  else if (dbCat === "database") category = "database";
+  else if (dbCat === "devops" || dbCat === "cloud" || dbCat === "mobile") category = "cloud";
+  else if (dbCat === "tools") category = "tools";
+  else if (dbCat === "security") category = "security";
+
+  return {
+    name: db.name,
+    category,
+    years: meta.years,
+    status: meta.status,
+    description: meta.description,
+    color: meta.color,
+    glowColor: meta.glowColor,
+  };
+}
+
 export default function Skills() {
+  const [skills, setSkills] = useState<Skill[]>(skillsData);
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [selectedSkill, setSelectedSkill] = useState<Skill>(skillsData[0]);
 
+  useEffect(() => {
+    async function loadSkills() {
+      const dbSkills = await getSkills();
+      if (dbSkills && dbSkills.length > 0) {
+        const mapped = dbSkills.map(mapDBSkill);
+        setSkills(mapped);
+        // If the selected skill is not in the new list, reset it
+        setSelectedSkill(prev => {
+          const found = mapped.find(s => s.name === prev.name);
+          return found || mapped[0];
+        });
+      }
+    }
+    loadSkills();
+  }, []);
+
   // Memoize the filtered list — avoids re-filtering 40+ skills on selectedSkill state changes
   const filteredSkills = useMemo(
-    () => skillsData.filter(
+    () => skills.filter(
       (skill) => activeCategory === "all" || skill.category === activeCategory
     ),
-    [activeCategory]
+    [activeCategory, skills]
   );
 
   const handleCategoryChange = useCallback((catId: string) => {
     setActiveCategory(catId);
-    const firstOfCat = skillsData.find(
-      (skill) => catId === "all" || skill.category === catId
-    );
-    if (firstOfCat) {
-      setSelectedSkill(firstOfCat);
-    }
+    setSkills(currentSkills => {
+      const firstOfCat = currentSkills.find(
+        (skill) => catId === "all" || skill.category === catId
+      );
+      if (firstOfCat) {
+        setSelectedSkill(firstOfCat);
+      }
+      return currentSkills;
+    });
   }, []);
 
   return (
